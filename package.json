@@ -1,0 +1,17 @@
+{
+  "name": "bitcoinbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bitcon_bot.js",
+  "scripts": {
+    "start": "node bitcon_bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ramazan Demir",
+  "license": "ISC",
+  "dependencies": {
+    "twit": "^2.2.9",
+    "request": "2.83.0",
+    "async-waterfall": "0.1.5"
+  }
+}

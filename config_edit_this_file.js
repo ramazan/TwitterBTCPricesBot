@@ -1,3 +1,5 @@
+// RENAME THIS FILE TO "config.js"
+
 module.exports = {
         consumer_key:         '',   
         consumer_secret:      '',

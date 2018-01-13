@@ -31,14 +31,15 @@ Login with your Twitter account and create app
 
 After creating app  click 'Keys and Access Tokens' section and get tokens 
 
-![Token](https://i.imgur.com/XRBXt6X.png)
+<img src="https://i.imgur.com/XRBXt6X.png" height="400px" width="725px"/>
+
 ![Secret](https://i.imgur.com/tj65QYN.png)
 
 
 ## Run
 
-![Run]( https://image.ibb.co/cUEGem/Screen_Shot_2017_12_23_at_23_17_25.png)
+![Run]( https://image.ibb.co/niyJ46/Screen_Shot_2018_01_13_at_23_42_06.png)
 
 
 ## Finally Coin Prices :)
-![Sample](https://image.ibb.co/dSdEX6/Screen_Shot_2017_12_23_at_23_15_17.png)
+![Sample](https://image.ibb.co/cwtnE6/Screen_Shot_2018_01_13_at_23_38_01.png)

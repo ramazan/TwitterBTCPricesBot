@@ -5,10 +5,8 @@ const request = require('request');
 const waterfall = require('async-waterfall');
 
 tweetIt();
-setInterval(tweetIt, 1000 * 60 * 10); // 120 minute time interval
+setInterval(tweetIt, 1000 * 60 * 20); // 120 minute time interval
 console.log("Cryptocurrency app is running :)");
-
-// https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,TRY ====> BTC -> USD,TRY
 
 // Ripple XRP
 // Etherium ETH
@@ -19,68 +17,86 @@ console.log("Cryptocurrency app is running :)");
 
 function tweetIt() {
 
+  String.prototype.insertAt=function(index, string) { 
+    return this.substr(0, index) + string + this.substr(index);
+  }
+  
   const btcTask = (callback) => {
+   
     request({
-      url: 'https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,TRY',
+      url: 'https://www.bitstamp.net/api/v2/ticker/btcusd',
       json: true,
     },
     (err, res, json) => {
-      btcUsd = json.USD;
-      btcTry = json.TRY;
-      callback(null, [btcUsd, btcTry]);
+      btcUsd = json.last;
+      btcUsd  = btcUsd.insertAt(2, ",");
+      callback(null, btcUsd);
     });
   };
 
-  const ethTask = ([btcUsd, btcTry], callback) => {
+  const ethTask = (btcUsd, callback) => {
     request({
-      url: 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,TRY',
+      url: 'https://www.bitstamp.net/api/v2/ticker/ethusd',
       json: true,
     },
     (err, res, json) => {
-      ethUsd = json.USD;
-      ethTry = json.TRY;
-      callback(null, [btcUsd, btcTry], [ethUsd, ethTry]);
+      ethUsd = json.last;
+      ethUsd  = ethUsd.insertAt(1, ",");
+      callback(null, btcUsd ,ethUsd);
     });
   };
 
-  const iotTask = ([btcUsd, btcTry], [ethUsd, ethTry], callback) => {
+  const xrpTask = (btcUsd,ethUsd,callback) => {
     request({
-      url: 'https://min-api.cryptocompare.com/data/price?fsym=IOT&tsyms=USD,TRY',
+      url: 'https://www.bitstamp.net/api/v2/ticker/xrpusd',
       json: true,
     },
     (err, res, json) => {
-      iotUsd = json.USD;
-      iotTry = json.TRY;
-      callback(null, [iotUsd, iotTry], [btcUsd, btcTry], [ethUsd, ethTry]);
+      xrpUsd = json.last;
+      callback(null,btcUsd,ethUsd,xrpUsd);
     });
   };
 
-  const UsdTryTask = ([iotUsd, iotTry], [btcUsd, btcTry], [ethUsd, ethTry], callback) => {
-    
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-    let hour = date.getHours();
-    let minute = date.getMinutes();
-    let fullHour = hour + ':' + minute;
-    let fullDate = day + "." + month + "." + year;
+  const bchTask = (btcUsd,ethUsd,xrpUsd,callback) => {
+    request({
+      url: 'https://www.bitstamp.net/api/v2/ticker/bchusd',
+      json: true,
+    },
+    (err, res, json) => {
+      bchUsd = json.last;
+      bchUsd = bchUsd.insertAt(1,",");
+      timestamp = json.timestamp;    
+      callback(null,btcUsd,ethUsd,xrpUsd,bchUsd,timestamp);
+    });
+  };
+
+  const UsdTryTask = (btcUsd,ethUsd,xrpUsd,bchUsd,timestamp,callback) => {
+  
+    var a = new Date(timestamp * 1000);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var datetimestamp = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min ;
 
     let tweetProp = `
-1 Bitcoin 
+1 Bitcoin ( #BTC )
 Dollar: ${btcUsd}$ 
-TRY: ${btcTry} ₺
 
-1 Etherium
+1 Bitcoin Cash ( #BCH )
+Dollar: ${bchUsd}$ 
+
+1 Ethereum ( #ETH )
 Dollar: ${ethUsd}$ 
-TRY: ${ethTry} ₺
 
-1 IOTA
-Dollar: ${iotUsd}$ 
-TRY: ${iotTry} ₺
+1 Ripple ( #XRP )
+Dollar: ${xrpUsd}$ 
 
-Time : ${fullHour}
-Date: ${fullDate}
+Date: ${datetimestamp}
+
+#Bitcoin #Ethereum #cryptocurrency #crypto #altcoin #Blockchain #Ripple
     `;
 
     let tweet = {
@@ -90,7 +106,7 @@ Date: ${fullDate}
     callback(null, tweet);
   }
 
-  waterfall([btcTask, ethTask, iotTask, UsdTryTask], (err, result) => {
+  waterfall([btcTask, ethTask, xrpTask,bchTask,UsdTryTask], (err, result) => {
     
     T.post('statuses/update', result, tweeted);
 
